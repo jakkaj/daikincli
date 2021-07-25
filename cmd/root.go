@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"daikincli/cmd/get"
 	"daikincli/cmd/set"
 	"daikincli/internal/dclilog"
 	"fmt"
@@ -54,5 +55,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "set logging level to verbose")
 
 	rootCmd.AddCommand(set.New())
+	rootCmd.AddCommand(get.New())
 
 }

@@ -1,6 +1,9 @@
 build:
 	go build -o dcli
 
+run: build	
+	./dcli get
+
 lint: 
 	golangci-lint run --timeout=20m
 

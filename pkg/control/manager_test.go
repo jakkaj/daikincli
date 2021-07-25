@@ -3,6 +3,7 @@ package control_test
 import (
 	"daikincli/internal/dclilog"
 	"daikincli/pkg/control"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,5 @@ func TestGet(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	assert.NotEmpty(t, state)
-
-	logger.Infof(state)
+	fmt.Println(state)
 }

@@ -1,7 +1,6 @@
 package dcliconfig
 
 import (
-	"daikincli/internal/dclilog"
 	"daikincli/internal/fileutil"
 	"fmt"
 	"io/ioutil"
@@ -70,10 +69,6 @@ func GetConfig() (config *Config) {
 	}
 
 	once.Do(func() { // <-- atomic, does not allow repeating
-
-		log := dclilog.GetInstance()
-
-		log.Infof("dcli config path: %s", exPath)
 
 		viper.AutomaticEnv()
 		viper.AddConfigPath(exPath)
