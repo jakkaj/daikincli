@@ -22,7 +22,7 @@ type Settings struct {
 	Power    bool
 }
 
-func (s *Manager) get(endpoint string) (Settings, error) {
+func (s *Manager) get(endpoint string) (string, error) {
 
 	baseUrl := s.config.GetString(dcliconfig.DAIKIN_URL)
 	password := s.config.GetString(dcliconfig.DAIKIN_PASSWORD)
@@ -32,19 +32,71 @@ func (s *Manager) get(endpoint string) (Settings, error) {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		return Settings{}, err
+		return "", err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		return Settings{}, err
+		return "", err
 	}
 	strBody := string(body)
 
+	return strBody, nil
+
+}
+
+func (s *Manager) SetState(temp string, mode string, fanSpeed string) error {
+
+	if temp == "" && mode == "" && fanSpeed == "" {
+		s.logger.Infof("No value changed")
+		return nil
+	}
+
+	b, err := s.get("get_control_info")
+
+	if err != nil {
+		return err
+	}
+
 	pairs := make(map[string]string)
 
-	for _, group := range strings.Split(strBody, ",") {
+	for _, group := range strings.Split(b, ",") {
+		nameVal := strings.Split(group, "=")
+		pairs[nameVal[0]] = nameVal[1]
+	}
+
+	if temp != "" {
+		pairs["stemp"] = temp
+	}
+
+	switch mode{
+		case MODE_FAN{
+			
+		}
+	}
+	
+
+}
+
+func (s *Manager) GetState() (Settings, error) {
+	b, err := s.get("get_control_info")
+
+	if err != nil {
+		return Settings{}, err
+	}
+
+	settings, err := s.parseState(b)
+
+	
+	return settings, err
+
+}
+
+func (s *Manager) parseState(b string) (Settings, error) {
+	pairs := make(map[string]string)
+
+	for _, group := range strings.Split(b, ",") {
 		nameVal := strings.Split(group, "=")
 		pairs[nameVal[0]] = nameVal[1]
 	}
@@ -63,6 +115,8 @@ func (s *Manager) get(endpoint string) (Settings, error) {
 		settings.Mode = MODE_AUTO
 
 	}
+
+	var err error
 
 	settings.FanSpeed, err = strconv.Atoi(pairs["f_rate"])
 
@@ -86,16 +140,6 @@ func (s *Manager) get(endpoint string) (Settings, error) {
 	settings.Power = pairs["pow"] == "1"
 
 	return settings, nil
-
-}
-
-func (s *Manager) GetState() (Settings, error) {
-	b, err := s.get("get_control_info")
-	if err != nil {
-		return Settings{}, err
-	}
-
-	return b, nil
 }
 
 func NewManager(logger *dclilog.Logger) *Manager {

@@ -1,6 +1,9 @@
 package set
 
 import (
+	"daikincli/internal/dclilog"
+	"daikincli/pkg/control"
+
 	"github.com/spf13/cobra"
 )
 
@@ -11,6 +14,18 @@ var (
 		Use:   "set",
 		Short: "Set values",
 		Long:  "Use the various options to set values on the Daikin",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			logger := dclilog.GetInstance()
+			manager := control.NewManager(logger)
+
+			state, err := manager.GetState()
+
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
 	}
 )
 
