@@ -27,7 +27,7 @@ var (
 			logger := dclilog.GetInstance()
 			manager := control.NewManager(logger)
 
-			if mode != "" || power != "" || fan != "" || temp == "" {
+			if mode != "" || power != "" || fan != "" || temp != "" {
 				mode = strings.ToLower(mode)
 				power = strings.ToLower(power)
 
@@ -36,7 +36,7 @@ var (
 				if err != nil {
 					return err
 				}
-
+				time.Sleep(2 * time.Second)
 			}
 
 			if br != "" || st != "" {
@@ -45,8 +45,6 @@ var (
 					return err
 				}
 			}
-
-			time.Sleep(2 * time.Second)
 
 			state, err := manager.GetState()
 

@@ -66,7 +66,6 @@ func (s *Manager) set(endpoint string, qs string) error {
 func (s *Manager) SetState(temp string, mode string, fanSpeed string, power string) (err error) {
 
 	if temp == "" && mode == "" && fanSpeed == "" && power == "" {
-		s.logger.Infof("No value changed")
 		return
 	}
 
