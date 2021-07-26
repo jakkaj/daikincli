@@ -1,8 +1,14 @@
 build:
 	go build -o dcli
 
-run: build	
+get: build	
 	./dcli get
+
+set: build	
+	./dcli set
+
+windows: 
+	GOOS=windows GOARCH=amd64 go build -o dcliwin
 
 zone: build	
 	./dcli zone

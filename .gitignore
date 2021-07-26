@@ -16,3 +16,5 @@
 dcli.conf
 dcli
 .devcontainer/.env
+build
+dcliwin

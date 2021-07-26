@@ -24,6 +24,10 @@ var (
 			logger := dclilog.GetInstance()
 			manager := control.NewManager(logger)
 
+			if mode == "" && power == "" && fan == "" && temp == "" {
+				return nil
+			}
+
 			mode = strings.ToLower(mode)
 			power = strings.ToLower(power)
 
