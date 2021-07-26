@@ -31,3 +31,13 @@ func TestGet(t *testing.T) {
 
 	fmt.Println(state)
 }
+
+func TestGetZones(t *testing.T) {
+	logger := dclilog.GetInstance()
+	manager := control.NewManager(logger)
+
+	val, err := manager.GetZones()
+
+	assert.NoError(t, err)
+	fmt.Println(val)
+}

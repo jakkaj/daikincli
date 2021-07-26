@@ -3,10 +3,30 @@ package cli
 import (
 	"daikincli/pkg/control"
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/kyokomi/emoji/v2"
 )
+
+func RenderZones(zones map[string]bool) {
+	white := color.New(color.FgHiWhite).PrintfFunc()
+
+	green := color.New(color.FgHiGreen, color.Bold).PrintfFunc()
+	red := color.New(color.FgRed, color.Bold).PrintfFunc()
+
+	for i, v := range zones {
+		white(strings.ToLower(i))
+
+		if v {
+			green(" ON ")
+		} else {
+			red(" OFF ")
+		}
+
+	}
+	fmt.Println()
+}
 
 func RenderSettings(state *control.Settings) {
 	white := color.New(color.FgHiWhite).PrintfFunc()

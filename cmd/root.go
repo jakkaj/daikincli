@@ -3,6 +3,7 @@ package cmd
 import (
 	"daikincli/cmd/get"
 	"daikincli/cmd/set"
+	"daikincli/cmd/zones"
 	"daikincli/internal/dclilog"
 	"fmt"
 
@@ -56,5 +57,5 @@ func init() {
 
 	rootCmd.AddCommand(set.New())
 	rootCmd.AddCommand(get.New())
-
+	rootCmd.AddCommand(zones.New())
 }
