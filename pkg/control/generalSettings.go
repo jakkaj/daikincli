@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Manager struct {
@@ -64,7 +63,7 @@ func (s *Manager) set(endpoint string, qs string) error {
 
 }
 
-func (s *Manager) SetState(temp string, mode string, fanSpeed string, power string) (before *Settings, after *Settings, err error) {
+func (s *Manager) SetState(temp string, mode string, fanSpeed string, power string) (err error) {
 
 	if temp == "" && mode == "" && fanSpeed == "" && power == "" {
 		s.logger.Infof("No value changed")
@@ -72,12 +71,6 @@ func (s *Manager) SetState(temp string, mode string, fanSpeed string, power stri
 	}
 
 	b, err := s.get("get_control_info")
-
-	if err != nil {
-		return
-	}
-
-	before, err = s.parseState(b)
 
 	if err != nil {
 		return
@@ -134,24 +127,6 @@ func (s *Manager) SetState(temp string, mode string, fanSpeed string, power stri
 	}
 
 	err = s.set("set_control_info", qs)
-
-	if err != nil {
-		return
-	}
-
-	time.Sleep(2 * time.Second)
-
-	a, err := s.get("get_control_info")
-
-	if err != nil {
-		return
-	}
-
-	after, err = s.parseState(a)
-
-	if err != nil {
-		return
-	}
 
 	return
 }

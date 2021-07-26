@@ -24,7 +24,15 @@ var (
 				return fmt.Errorf("could not read controller state: %w", err)
 			}
 
+			zone, err := manager.GetZones()
+
+			if err != nil {
+				return fmt.Errorf("could not read controller zone: %w", err)
+			}
+
 			cli.RenderSettings(state)
+
+			cli.RenderZones(zone)
 
 			return nil
 		},

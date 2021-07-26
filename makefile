@@ -1,6 +1,9 @@
 build:
 	go build -o dcli
 
+plain: build
+	./dcli
+
 get: build	
 	./dcli get
 
@@ -18,3 +21,7 @@ lint:
 
 checkin: lint
 	go mod tidy
+
+install:
+	sudo cp ./dcli* /usr/local/bin
+	

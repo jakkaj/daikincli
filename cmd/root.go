@@ -13,8 +13,7 @@ import (
 )
 
 var (
-	hash    string
-	verbose bool
+	hash string
 
 	rootCmd = &cobra.Command{
 		Use:   "dcli",
@@ -53,9 +52,16 @@ func setVersion() {
 func init() {
 	cobra.OnInitialize()
 
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "set logging level to verbose")
-
 	rootCmd.AddCommand(set.New())
 	rootCmd.AddCommand(get.New())
 	rootCmd.AddCommand(zones.New())
+
+	if len(os.Args) == 1 {
+		args := []string{
+			"get",
+		}
+
+		rootCmd.SetArgs(args)
+	}
+
 }
