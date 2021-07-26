@@ -1,9 +1,44 @@
 package control
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 )
+
+func (s *Manager) SetZones(bedroom bool, study bool) (err error) {
+
+	z, err := s.get("get_zone_setting")
+
+	if err != nil {
+		return err
+	}
+
+	zones := strings.Split(z, ",")[1]
+
+	br := "0"
+
+	if bedroom {
+		br = "1"
+	}
+
+	st := "0"
+
+	if study {
+		st = "1"
+	}
+
+	zoneOnff := fmt.Sprintf("%v;%v;0;0;0;0;0;0", st, br)
+
+	zoneOnffEncoded := url.QueryEscape(zoneOnff)
+
+	qs := fmt.Sprintf("&%v&zone_onoff=%v", zones, zoneOnffEncoded)
+
+	err = s.set("set_zone_setting", qs)
+
+	return err
+
+}
 
 func (s *Manager) GetZones() (zones map[string]bool, err error) {
 

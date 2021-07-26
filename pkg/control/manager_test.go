@@ -5,6 +5,7 @@ import (
 	"daikincli/pkg/control"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -40,4 +41,21 @@ func TestGetZones(t *testing.T) {
 
 	assert.NoError(t, err)
 	fmt.Println(val)
+}
+
+func TestSetZones(t *testing.T) {
+	logger := dclilog.GetInstance()
+	manager := control.NewManager(logger)
+
+	err := manager.SetZones(true, true)
+
+	assert.NoError(t, err)
+
+	time.Sleep(2 * time.Second)
+
+	val, err := manager.GetZones()
+
+	assert.NoError(t, err)
+	fmt.Println(val)
+
 }

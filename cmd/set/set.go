@@ -5,6 +5,7 @@ import (
 	"daikincli/internal/dclilog"
 	"daikincli/pkg/control"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -22,6 +23,9 @@ var (
 		RunE: func(cmd *cobra.Command, args []string) error {
 			logger := dclilog.GetInstance()
 			manager := control.NewManager(logger)
+
+			mode = strings.ToLower(mode)
+			power = strings.ToLower(power)
 
 			before, after, err := manager.SetState(temp, mode, fan, power)
 
