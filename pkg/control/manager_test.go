@@ -9,6 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSet(t *testing.T) {
+	logger := dclilog.GetInstance()
+	manager := control.NewManager(logger)
+
+	before, after, err := manager.SetState("24", "", "", "")
+
+	assert.NoError(t, err)
+
+	assert.NotEmpty(t, before.Temp)
+	assert.NotEmpty(t, after.Temp)
+}
+
 func TestGet(t *testing.T) {
 	logger := dclilog.GetInstance()
 	manager := control.NewManager(logger)

@@ -27,7 +27,7 @@ var (
 /_____/ \__,_//_//_/|_|/_//_/ /_/        \___//_//_/   
                                                        
 =======================================================
-	cli tool for Daikin air controller`,
+	   cli tool for Daikin air controller`,
 	}
 )
 

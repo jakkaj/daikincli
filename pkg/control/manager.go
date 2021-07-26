@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Manager struct {
@@ -46,17 +47,40 @@ func (s *Manager) get(endpoint string) (string, error) {
 
 }
 
-func (s *Manager) SetState(temp string, mode string, fanSpeed string) error {
+func (s *Manager) set(endpoint string, qs string) error {
 
-	if temp == "" && mode == "" && fanSpeed == "" {
+	baseUrl := s.config.GetString(dcliconfig.DAIKIN_URL)
+	password := s.config.GetString(dcliconfig.DAIKIN_PASSWORD)
+
+	url := fmt.Sprintf("%v/skyfi/aircon/%v?lpw=%v%v", baseUrl, endpoint, password, qs)
+
+	_, err := http.Get(url)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (s *Manager) SetState(temp string, mode string, fanSpeed string, power string) (before *Settings, after *Settings, err error) {
+
+	if temp == "" && mode == "" && fanSpeed == "" && power == "" {
 		s.logger.Infof("No value changed")
-		return nil
+		return
 	}
 
 	b, err := s.get("get_control_info")
 
 	if err != nil {
-		return err
+		return
+	}
+
+	before, err = s.parseState(b)
+
+	if err != nil {
+		return
 	}
 
 	pairs := make(map[string]string)
@@ -70,30 +94,82 @@ func (s *Manager) SetState(temp string, mode string, fanSpeed string) error {
 		pairs["stemp"] = temp
 	}
 
-	switch mode{
-		case MODE_FAN{
-			
+	if power != "" {
+		if power == "on" {
+			pairs["pow"] = "1"
+		} else {
+			pairs["pow"] = "0"
 		}
-	}
-	
 
+	}
+
+	switch fanSpeed {
+	case "1":
+		pairs["f_rate"] = "1"
+	case "2":
+		pairs["f_rate"] = "3"
+	case "3":
+		pairs["f_rate"] = "5"
+	}
+
+	switch Mode(mode) {
+	case MODE_FAN:
+		pairs["mode"] = "0"
+
+	case MODE_COOL:
+		pairs["mode"] = "2"
+
+	case MODE_HEAT:
+		pairs["mode"] = "1"
+
+	case MODE_AUTO:
+		pairs["mode"] = "3"
+
+	}
+
+	qs := ""
+
+	for pair, val := range pairs {
+		qs = fmt.Sprintf("%v&%v=%v", qs, pair, val)
+	}
+
+	err = s.set("set_control_info", qs)
+
+	if err != nil {
+		return
+	}
+
+	time.Sleep(2 * time.Second)
+
+	a, err := s.get("get_control_info")
+
+	if err != nil {
+		return
+	}
+
+	after, err = s.parseState(a)
+
+	if err != nil {
+		return
+	}
+
+	return
 }
 
-func (s *Manager) GetState() (Settings, error) {
+func (s *Manager) GetState() (*Settings, error) {
 	b, err := s.get("get_control_info")
 
 	if err != nil {
-		return Settings{}, err
+		return &Settings{}, err
 	}
 
 	settings, err := s.parseState(b)
 
-	
 	return settings, err
 
 }
 
-func (s *Manager) parseState(b string) (Settings, error) {
+func (s *Manager) parseState(b string) (*Settings, error) {
 	pairs := make(map[string]string)
 
 	for _, group := range strings.Split(b, ",") {
@@ -128,18 +204,18 @@ func (s *Manager) parseState(b string) (Settings, error) {
 	}
 
 	if err != nil {
-		return Settings{}, err
+		return &Settings{}, err
 	}
 
 	settings.Temp, err = strconv.Atoi(pairs["stemp"])
 
 	if err != nil {
-		return Settings{}, err
+		return &Settings{}, err
 	}
 
 	settings.Power = pairs["pow"] == "1"
 
-	return settings, nil
+	return &settings, nil
 }
 
 func NewManager(logger *dclilog.Logger) *Manager {
