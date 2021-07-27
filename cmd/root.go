@@ -64,4 +64,15 @@ func init() {
 		rootCmd.SetArgs(args)
 	}
 
+	if len(os.Args) > 1 && os.Args[1] != "get" && os.Args[1] != "set" {
+
+		args := []string{
+			"set",
+		}
+
+		args = append(args, os.Args[1:]...)
+
+		rootCmd.SetArgs(args)
+	}
+
 }
